@@ -84,6 +84,9 @@ app.get('/dbCreate', function (req, res)
   // test if connected to the DB
   if(_dbConnected==true)
   { // connected to the DB
+    // Create Counter Collection
+    _createCounterColl();
+
     // Create Agent Collection
     _createAgentColl();
 
@@ -194,6 +197,16 @@ app.get('/echo', function (req, res)
 //-----------------------------------------------------------------------------
 // Private function start here
 //-----------------------------------------------------------------------------
+
+// create the Counter collection that's used for uniqueIDs 
+function _createCounterColl() 
+{
+  var crefCounter = helper.crefCounter();
+
+
+
+  return;
+}
 
 function _createAgentColl() 
 {
