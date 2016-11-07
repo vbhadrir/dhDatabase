@@ -201,9 +201,7 @@ app.get('/echo', function (req, res)
 // create the Counter collection that's used for uniqueIDs 
 function _createCounterColl() 
 {
-  var crefCounter = helper.crefCounter();
-
-
+  helper.createCounterColl();
 
   return;
 }
