@@ -84,8 +84,13 @@ app.get('/dbCreate', function (req, res)
   // test if connected to the DB
   if(_dbConnected==true)
   { // connected to the DB
+    // Create Agent Collection
+    _createAgentColl();
 
     retjson.success  = "DB created successfully!";
+
+    // send the http response message
+    helper.httpJsonResponse(res,statusCode,retjson);
   }
   else
   { // not connected to the DB
@@ -93,10 +98,10 @@ app.get('/dbCreate', function (req, res)
     retjson.RC = _rcError;
     retjson.error = "ERROR: we are not connected to the DB!";
     statusCode = 500;  // internal error while connecting to the DB
-  }
 
-  // send the http response message
-  helper.httpJsonResponse(res,statusCode,retjson);
+    // send the http response message
+    helper.httpJsonResponse(res,statusCode,retjson);
+  }
 
   return;
 });
@@ -183,3 +188,13 @@ app.get('/echo', function (req, res)
   return;
 });
 
+
+//-----------------------------------------------------------------------------
+// Private function start here
+//-----------------------------------------------------------------------------
+
+function _createAgentColl() 
+{
+
+  return;
+}
