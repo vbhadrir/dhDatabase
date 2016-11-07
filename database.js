@@ -199,9 +199,9 @@ app.get('/echo', function (req, res)
 //-----------------------------------------------------------------------------
 
 // create the Counter collection that's used for uniqueIDs 
-function _createCounterColl() 
+function _createCounterColl(callback) 
 {
-  helper.createCounterColl();
+  helper.createCounterColl(callback);
 
   return;
 }
