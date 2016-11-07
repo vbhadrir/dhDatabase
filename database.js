@@ -117,6 +117,8 @@ app.get('/dbDelete', function (req, res)
   // test if connected to the DB
   if(_dbConnected==true)
   { // connected to the DB
+    // delete the database
+    _deleteDB();
 
     retjson.success  = "DB deleted successfully!";
   }
@@ -195,6 +197,16 @@ app.get('/echo', function (req, res)
 
 function _createAgentColl() 
 {
+
+  return;
+}
+
+
+// deletes the database completely, does a drop DB
+function _deleteDB() 
+{
+  // drop the entire database
+  _dbref.dropDatabase();
 
   return;
 }
