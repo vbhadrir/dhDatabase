@@ -74,10 +74,9 @@ helper.dbInit( function(err)
 
 
 //-----------------------------------------------------------------------------
-// resets the notification collection
-// deletes all records from the collection
+// creates the database
 //-----------------------------------------------------------------------------
-app.get('/createDB', function (req, res) 
+app.get('/dbCreate', function (req, res) 
 {
   var retjson = {"RC":_rcOK};       // assume a good json response
   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
@@ -87,6 +86,34 @@ app.get('/createDB', function (req, res)
   { // connected to the DB
 
     retjson.success  = "DB created successfully!";
+  }
+  else
+  { // not connected to the DB
+    retjson = {};
+    retjson.RC = _rcError;
+    retjson.error = "ERROR: we are not connected to the DB!";
+    statusCode = 500;  // internal error while connecting to the DB
+  }
+
+  // send the http response message
+  helper.httpJsonResponse(res,statusCode,retjson);
+
+  return;
+});
+
+//-----------------------------------------------------------------------------
+// delete the database
+//-----------------------------------------------------------------------------
+app.get('/dbDelete', function (req, res) 
+{
+  var retjson = {"RC":_rcOK};       // assume a good json response
+  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+
+  // test if connected to the DB
+  if(_dbConnected==true)
+  { // connected to the DB
+
+    retjson.success  = "DB deleted successfully!";
   }
   else
   { // not connected to the DB
