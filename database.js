@@ -77,7 +77,7 @@ helper.dbInit( function(err)
 // resets the notification collection
 // deletes all records from the collection
 //-----------------------------------------------------------------------------
-app.get('/reset', function (req, res) 
+app.get('/createDB', function (req, res) 
 {
   var retjson = {"RC":_rcOK};       // assume a good json response
   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
@@ -85,10 +85,8 @@ app.get('/reset', function (req, res)
   // test if connected to the DB
   if(_dbConnected==true)
   { // connected to the DB
-    // delete all records in the collection
-    _crefNotification.deleteMany( {}, {w:1, j:true} );
 
-    retjson.success  = "Notification collection is now empty!";
+    retjson.success  = "DB created successfully!";
   }
   else
   { // not connected to the DB
@@ -102,149 +100,6 @@ app.get('/reset', function (req, res)
   helper.httpJsonResponse(res,statusCode,retjson);
 
   return;
-});
-
-//-----------------------------------------------------------------------------
-// Sends a notification to an agent and writes it to the mongoDB           
-// Notification JSON record format is:
-// { "_id":"580e196acced882d43d4a286", "notificationId":"notification1001", "agentId":"agent1001", "clientId":"client1003" }
-// 
-// syntax examples:
-//   /notify?agentId=1001,clientId=1001
-//-----------------------------------------------------------------------------
-app.get('/notify', function (req, res) 
-{
-   var retjson = {"RC":_rcOK};       // assume a good json response
-   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-   // test if connected to the DB
-   if(_dbConnected==true)
-   { // connected to the DB
-     var jsonRecord;                  // the json record to be added to the collection
-
-     // check if queryParm has been sent?
-     var queryObject = url.parse(req.url,true).query;
-     var agentId     = queryObject.agentId;
-     var clientId    = queryObject.clientId;
-     if(agentId && clientId)
-     { // we have the required parms
-       // create a unique pkId (primaryKeyId ) for the notification record
-       helper.genNotificationId(
-       function(err,pkId)
-       { // we should now have the generated unique pkId for the Notification Record
-         if(!err)
-         { // notificationId generated successfully
-           // add the record/row to the Notification collection
-           jsonRecord = { _id:pkId, 'notificationId':pkId, 'agentId':agentId, 'clientId':clientId};
-           _crefNotification.insertOne( jsonRecord, {w:1, j:true},
-           function(err,result)
-           { 
-             if(!err)
-             {
-               retjson.success  = "Agent has been notified, client should get a response shortly.";
-             }
-             else
-             {
-               statusCode    = 500;
-               retjson.RC    = _rcError;
-               retjson.error = "ERROR: failed to add record to Notification collection! err: " + err;
-             }
-
-             // send the http response message
-             res.status(statusCode).json(retjson);
-             res.end;
-           });
-         }
-         else
-         { // error generating the unique pkID!
-           statusCode    = 500;
-           retjson.RC    = _rcError;
-           retjson.error = "ERROR: failed to generate pkID! err: " + err;
-
-           // send the http response message
-           res.status(statusCode).json(retjson);
-           res.end;
-         }
-       });
-     }
-     else
-     { // required parms missing
-       retjson = {};
-       retjson.RC = _rcError;
-       retjson.error = "Missing parms, valid syntax: .../notify?agentId=1001&clientId=1001";
-    
-       // set http status code
-       statusCode = 400;
-
-       // send the http response message
-       helper.httpJsonResponse(res,statusCode,retjson);
-     }
-   }
-   else
-   { // not connected to the DB
-     retjson = {};
-     retjson.RC = _rcError;
-     retjson.error = "ERROR: we are not connected to the DB!";
-     statusCode = 500;  // internal error while connecting to the DB
-
-     // send the http response message
-     helper.httpJsonResponse(res,statusCode,retjson);
-   }
-
-   return;
-});
-
-//-----------------------------------------------------------------------------
-// Search for notification records within the notification collection in MongoDB
-// syntax examples:
-//   /search                                        get all records 
-//   /search?query={"clientId":"client1003"}        get records by clientID 
-//   /search?query={"agentId":"agent1001"}          get records by agentID 
-//   /search?query={"notificationId":"agent100"}    get records by notificationID 
-//-----------------------------------------------------------------------------
-app.get('/search', function (req, res)
-{
-   var retjson = {"RC":_rcOK};       // assume a good json response
-   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-   // test if connected to the DB
-   if(_dbConnected==true)
-   { // connected to the DB
-     var dbQuery;                     // query used for looking up records in the collection
-
-     // check if queryParm has been sent?
-     var queryObject = url.parse(req.url,true).query;
-     var queryParm   = queryObject.query;
-     if(queryParm)
-     { // we have a query parm
-       console.log(" ..queryParm " + queryParm);
-       dbQuery = JSON.parse(queryParm);
-     }
-     else
-     { // no query parm, assume query all records
-       dbQuery = {};
-     }
-
-     // fetch records from the notification collection based on the query desired.
-     _crefNotification.find(dbQuery).toArray( function(err, items) 
-     {
-        retjson = items;
-    
-        // send the http response message
-        helper.httpJsonResponse(res,statusCode,retjson);
-     });
-   }
-   else
-   { // not connected to the DB
-     retjson.RC = _rcError;
-     retjson.error = "ERROR: we are not connected to the DB!";
-     statusCode = 500;  // internal error while connecting to the DB
-
-     // send the http response message
-     helper.httpJsonResponse(res,statusCode,retjson);
-   }
-
-   return;
 });
 
 //-----------------------------------------------------------------------------
@@ -301,85 +156,3 @@ app.get('/echo', function (req, res)
   return;
 });
 
-//-----------------------------------------------------------------------------
-// some testing methods, used to sanity test service
-//-----------------------------------------------------------------------------
-app.get('/test', function (req, res) 
-{
-  console.log("app.get(./test function has been called.");
-
-  // test code
-  helper.genClientId( 
-  function(err,pkId)
-  {
-      console.log("app.get(./test function pkId:" + pkId);
-
-      var retjson = {"RC":_rcOK};      // assume a good json response
-      var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-      if(!err)
-      {
-        retjson.success = "pkId is " + pkId;
-      }
-      else
-      { // error!
-        statusCode = 400;
-        retjson.RC = _rcError;
-        retjson.error = err;
-      }
-
-      // send the http response message
-      res.status(statusCode).json(retjson);
-      res.end;
-  });
-
-  return;
-});
-
-app.get('/test2', function (req, res) 
-{
-  console.log("app.get(./test2 function has been called.");
-
-  // force the Counter collection to be dropped (deleted)
-  helper.crefCounter().drop(
-  function(err, reply) 
-  {
-     var retjson = {"RC":_rcOK};      // assume a good json response
-     var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-     if(!err)
-     {
-       retjson.success = "Counter collection has been dropped.";
-     }
-     else
-     { // error!
-       statusCode = 400;
-       retjson.RC = _rcError;
-       retjson.error = "ERROR: Failed to drop Counter Collection! err:" + err;
-     }
-
-     // send the http response message
-     res.status(statusCode).json(retjson);
-     res.end;
-  });
-
-  return;
-});
-
-// test put function
-app.post('/test3', function (req, res) 
-{
-  console.log("app.post(./test3 function has been called.");
-
-  var retjson = {"RC":_rcOK};      // assume a good json response
-  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-  var postData = JSON.stringify(req.body);
-  retjson.sucess = "Post Data ->" + postData;
-
-  // send the http response message
-  res.status(statusCode).json(retjson);
-  res.end;
-
-  return;
-});
