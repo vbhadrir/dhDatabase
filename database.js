@@ -112,8 +112,6 @@ app.get('/dbCreate', function (req, res)
   // test if connected to the DB
   if(helper.dbConnected()==true)
   { // connected to the DB
-    // we will create the collections, but WITHOUT any callbacks
-    // we will assume everything builds correctly and check on the status later.
 
     // Create Counter Collection and be sure it's built prior to building any other collections.
     _createCounterColl(
@@ -123,6 +121,9 @@ app.get('/dbCreate', function (req, res)
       { // Counter collection is now fully built
         // we can safely proceed to build the other collections
         console.log('  ... Counter collection created successfully.' );
+
+        // Now we will create the remaining collections, but WITHOUT any callbacks
+        // we will assume everything builds correctly and check on the status later.
 
         // Create Client Collection
         _createClientColl();
