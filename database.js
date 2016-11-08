@@ -63,6 +63,45 @@ helper.dbInit( function(err)
 
 
 //-----------------------------------------------------------------------------
+// Checks if we are connected to the DB and reports list of all collections           
+//-----------------------------------------------------------------------------
+app.get('/dbConnected', function(req, res)
+{
+  var retjson = {"RC":_rcOK};       // assume a good json response
+  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+
+  // test if connected to the DB
+  if(helper.dbConnected()==true)
+  { // connected to the DB
+    retjson.success = "Succesfully connected to the DB.";
+  
+    // Let's fetch the list of collections currently stored in the DB
+    helper.dbref().listCollections().toArray(function(err, items) 
+    {
+      // get the dbURL
+      retjson.url = helpers.dburl();
+
+      // add the list of collections found to the return JSON
+      retjson.collections = items;
+  
+      // send the http response message
+      helper.httpJsonResponse(res,statusCode,retjson);
+    });
+  }
+  else
+  { // not connected to the DB
+    retjson.RC = _rcError;
+    retjson.error = "ERROR: we are not connected to the DB!";
+    statusCode = 500;  // internal error while connecting to the DB
+  
+    // send the http response message
+    helper.httpJsonResponse(res,statusCode,retjson);
+  }
+
+  return;
+});
+
+//-----------------------------------------------------------------------------
 // creates the database
 //-----------------------------------------------------------------------------
 app.get('/dbCreate', function (req, res) 
@@ -147,42 +186,6 @@ app.get('/dbDelete', function (req, res)
 
   // send the http response message
   helper.httpJsonResponse(res,statusCode,retjson);
-
-  return;
-});
-
-//-----------------------------------------------------------------------------
-// Checks if we are connected to the DB and reports list of all collections           
-//-----------------------------------------------------------------------------
-app.get('/dbConnected', function(req, res)
-{
-  var retjson = {"RC":_rcOK};       // assume a good json response
-  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-  // test if connected to the DB
-  if(helper.dbConnected()==true)
-  { // connected to the DB
-    retjson.success = "Succesfully connected to the DB.";
-  
-    // Let's fetch the list of collections currently stored in the DB
-    helper.dbref().listCollections().toArray(function(err, items) 
-    {
-      // add the list of collections found to the return JSON
-      retjson.collections = items;
-  
-      // send the http response message
-      helper.httpJsonResponse(res,statusCode,retjson);
-    });
-  }
-  else
-  { // not connected to the DB
-    retjson.RC = _rcError;
-    retjson.error = "ERROR: we are not connected to the DB!";
-    statusCode = 500;  // internal error while connecting to the DB
-  
-    // send the http response message
-    helper.httpJsonResponse(res,statusCode,retjson);
-  }
 
   return;
 });
