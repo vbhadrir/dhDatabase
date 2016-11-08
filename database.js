@@ -34,11 +34,6 @@ var _rcError   = 2;
 var _rcUnknown = 99;
 //-----------------------------------------------------------------------------
 
-// global refs to the db and the Notification collection
-var _dbConnected      = false;
-var _dbref            = null;
-var _crefNotification = null; 
-
 //-----------------------------------------------------------------------------
 // Main code body
 //-----------------------------------------------------------------------------
@@ -50,9 +45,6 @@ helper.dbInit( function(err)
 {
   if(!err)
   { // DB connections have been established. 
-    _dbref            = helper.dbref();            // save the refrence handle to the db
-    _crefNotification = helper.crefNotification(); // save the refrence handle to the Notification collection
-
     console.log('  ... application has successfully connected to the DB');
   }
   else
@@ -61,9 +53,6 @@ helper.dbInit( function(err)
     // but we mark the server as having a severe DB connection error!
     console.log('  ... WARNING: application failed to connect with the backend DB!');
   }
-
-  // get the db connected indicator and save a refrence
-  _dbConnected = helper.dbConnected();
 
   // Start the node.js server listening
   // even if the backend DB connection fails we still want to service requests
@@ -82,7 +71,7 @@ app.get('/dbCreate', function (req, res)
   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
 
   // test if connected to the DB
-  if(_dbConnected==true)
+  if(helper.dbConnected()==true)
   { // connected to the DB
     // we will create the collections, but WITHOUT any callbacks
     // we will assume everything builds correctly and check on the status later.
@@ -97,6 +86,9 @@ app.get('/dbCreate', function (req, res)
 
         // Create Agent Collection
         _createAgentColl();
+
+        // Create Office Collection
+        _createNotificationColl();
 
         // Create Office Collection
         _createOfficeColl();
@@ -134,7 +126,7 @@ app.get('/dbDelete', function (req, res)
   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
 
   // test if connected to the DB
-  if(_dbConnected==true)
+  if(helper.dbConnected()==true)
   { // connected to the DB
     // delete the database
     _deleteDB();
@@ -164,12 +156,12 @@ app.get('/dbConnected', function(req, res)
   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
 
   // test if connected to the DB
-  if(_dbConnected==true)
+  if(helper.dbConnected()==true)
   { // connected to the DB
     retjson.success = "Succesfully connected to the DB.";
   
     // Let's fetch the list of collections currently stored in the DB
-    _dbref.listCollections().toArray(function(err, items) 
+    helper.dbref().listCollections().toArray(function(err, items) 
     {
       // add the list of collections found to the return JSON
       retjson.collections = items;
@@ -262,6 +254,32 @@ app.get('/properties', function (req, res)
   return;
 });
 
+app.get('/notifications', function (req, res) 
+{
+  console.log("app.get(./notifications function has been called.");
+
+  var cref = helper.crefNotifications();
+  var dbQuery = {};               // query used for looking up records in the collection
+
+  // fetch records from the notification collection based on the query desired.
+  cref.find(dbQuery).toArray( function(err, items) 
+  {
+     if(!err)
+     {
+        // send the http response message
+        var retjson = {"RC":_rcOK};      // assume a good json response
+        var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+        //retjson.success = "  ... Items -> " + items;
+        retjson= items;
+
+        // send the http response message
+        helper.httpJsonResponse(res,statusCode,retjson);
+     }
+  });
+
+  return;
+});
+
 
 //-----------------------------------------------------------------------------
 // Private function start here
@@ -281,10 +299,40 @@ function _createAgentColl()
   return;
 }
 
+
+function _createNotificationColl() 
+{
+  // get refrence handle to the Notification collection
+  var cref = helper.crefNotification();
+
+  // create and add the first notify record to the Notification collection.
+  // generate a unique Notification Id key for this real-estate notification record
+  helper.genNotificationId(
+  function(err, pkId)
+  {
+    if(!err)
+    { // pkId generated 
+      var jsonRecord = 
+        {notificationId:pkId,agentId:1001,clientId:1001};
+
+      cref.insertOne( jsonRecord, {w:1, j:true},
+      function(err,result)
+      { 
+        if(!err)
+        {
+          console.log("Notification record "+pkId+" added to Notification collection.");
+        }
+      });
+    }
+  });
+
+  return;
+}
+
 function _createOfficeColl() 
 {
   // get refrence handle to the Office collection
-  var crefOffice = helper.crefOffice();
+  var cref = helper.crefOffice();
 
   // create and add the first office record to the Office collection.
   // generate a unique Office Id key for this real-estate Office record
@@ -299,7 +347,7 @@ function _createOfficeColl()
          numProperties:0
         };
 
-      crefOffice.insertOne( jsonRecord, {w:1, j:true},
+      cref.insertOne( jsonRecord, {w:1, j:true},
       function(err,result)
       { 
         if(!err)
@@ -317,7 +365,7 @@ function _createOfficeColl()
 function _createPropertyColl() 
 {
   // get refrence handle to the Property collection
-  var crefProperty = helper.crefProperty();
+  var cref = helper.crefProperty();
 
   // create and add the first property record to the Property collection.
   // generate a unique Property Id key for this real-estate property record
@@ -332,7 +380,7 @@ function _createPropertyColl()
          sqFeet:2895,numBeds:4,numBaths:3,description:'Two blocks from university'
         };
 
-      crefProperty.insertOne( jsonRecord, {w:1, j:true},
+      cref.insertOne( jsonRecord, {w:1, j:true},
       function(err,result)
       { 
         if(!err)
@@ -356,7 +404,7 @@ function _createPropertyColl()
          sqFeet:3200,numBeds:5,numBaths:3,description:'Nice cottage by lake'
         };
 
-      crefProperty.insertOne( jsonRecord, {w:1, j:true},
+      cref.insertOne( jsonRecord, {w:1, j:true},
       function(err,result)
       { 
         if(!err)
@@ -380,7 +428,7 @@ function _createPropertyColl()
          sqFeet:3950,numBeds:5,numBaths:5,description:'Mansion in the city'
         };
 
-      crefProperty.insertOne( jsonRecord, {w:1, j:true},
+      cref.insertOne( jsonRecord, {w:1, j:true},
       function(err,result)
       { 
         if(!err)
@@ -398,7 +446,7 @@ function _createPropertyColl()
 function _deleteDB() 
 {
   // drop the entire database
-  _dbref.dropDatabase();
+  helper.dbref().dropDatabase();
 
   return;
 }
