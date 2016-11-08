@@ -88,7 +88,14 @@ app.get('/dbCreate', function (req, res)
     // we will assume everything builds correctly and check on the status later.
 
     // Create Counter Collection
-    _createCounterColl();
+    _createCounterColl(
+    function(err)
+    {
+      if(!err)
+      {
+        console.log('  ... Counter collection created successfully.' );
+      }
+    });
 
     // Create Property Collection
     _createPropertyColl();
