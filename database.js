@@ -85,6 +85,9 @@ app.get('/dbCreate', function (req, res)
         // we can safely proceed to build the other collections
         console.log('  ... Counter collection created successfully.' );
 
+        // Create Client Collection
+        _createClientColl();
+
         // Create Agent Collection
         _createAgentColl();
 
@@ -205,6 +208,32 @@ app.get('/echo', function (req, res)
 //-----------------------------------------------------------------------------
 // functions to get/fetch records from the collections
 //-----------------------------------------------------------------------------
+app.get('/clients', function (req, res) 
+{
+  console.log("app.get(./clients function has been called.");
+
+  var cref = helper.crefClient();
+  var dbQuery = {};               // query used for looking up records in the collection
+
+  // fetch records from the notification collection based on the query desired.
+  cref.find(dbQuery).toArray( function(err, items) 
+  {
+     if(!err)
+     {
+        // send the http response message
+        var retjson = {"RC":_rcOK};      // assume a good json response
+        var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+        //retjson.success = "  ... Items -> " + items;
+        retjson= items;
+
+        // send the http response message
+        helper.httpJsonResponse(res,statusCode,retjson);
+     }
+  });
+
+  return;
+});
+
 app.get('/agents', function (req, res) 
 {
   console.log("app.get(./agents function has been called.");
@@ -319,6 +348,40 @@ app.get('/notifications', function (req, res)
 function _createCounterColl(callback) 
 {
   helper.createCounterColl(callback);
+
+  return;
+}
+
+function _createClientColl()
+{
+   // get refrence handle to the Client collection
+   var cref = helper.crefClient();
+
+   // create and add the first client record to the Client collection.
+   // generate a unique Client Id key for this real-estate client record
+   helper.genClientId(
+   function(err, pkId)
+   {
+     if(!err)
+     { // pkId generated 
+       var jsonRecord = 
+         {clientId:pkId,
+          clientName:{clientFN:'',clientLN:''},
+          clientAddr:{address:'',street:'',city:'',state:''},
+          agentId:1001,
+          suggestedProperties:[{propertyId:1001,propertyState:0,rating:0,comments:[{comment:'This is a beautiful home'}]}]
+         };
+
+       cref.insertOne( jsonRecord, {w:1, j:true},
+       function(err,result)
+       { 
+         if(!err)
+         {
+           console.log("Client record "+pkId+" added to Client collection.");
+         }
+       });
+     }
+   });
 
   return;
 }
