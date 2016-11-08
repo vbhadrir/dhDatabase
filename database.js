@@ -337,7 +337,7 @@ function _createAgentColl()
      { // pkId generated 
        var jsonRecord = 
          {agentId:pkId,agentId:1001,
-          agentData:{agentFN:'Dinesh',agentLN:'Chugtai',agentLicense:'CAL-34917'}
+          agentData:{agentFN:'Dinesh',agentLN:'Chugtai',agentLicense:'CAL-34917'},
           officeId:1001,
           properties:[{propertyId:'1001',clientId:'1001',propertyState:0}]
          };
