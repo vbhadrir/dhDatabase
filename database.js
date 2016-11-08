@@ -79,9 +79,10 @@ app.get('/dbCreate', function (req, res)
     // Create Counter Collection and be sure it's built prior to building any other collections.
     _createCounterColl(
     function(err)
-    {
+    { // callback, called when Counter collection is fully built and initialized.
       if(!err)
       { // Counter collection is now fully built
+        // we can safely proceed to build the other collections
         console.log('  ... Counter collection created successfully.' );
 
         // Create Agent Collection
@@ -201,7 +202,36 @@ app.get('/echo', function (req, res)
   return;
 });
 
-// test functions
+//-----------------------------------------------------------------------------
+// functions to get/fetch records from the collections
+//-----------------------------------------------------------------------------
+app.get('/agents', function (req, res) 
+{
+  console.log("app.get(./agents function has been called.");
+
+  var cref = helper.crefAgent();
+  var dbQuery = {};               // query used for looking up records in the collection
+
+  // fetch records from the notification collection based on the query desired.
+  cref.find(dbQuery).toArray( function(err, items) 
+  {
+     if(!err)
+     {
+        // send the http response message
+        var retjson = {"RC":_rcOK};      // assume a good json response
+        var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+        //retjson.success = "  ... Items -> " + items;
+        retjson= items;
+
+        // send the http response message
+        helper.httpJsonResponse(res,statusCode,retjson);
+     }
+  });
+
+  return;
+});
+
+// functions to get/fetch records from the collections
 app.get('/offices', function (req, res) 
 {
   console.log("app.get(./offices function has been called.");
@@ -293,12 +323,38 @@ function _createCounterColl(callback)
   return;
 }
 
-function _createAgentColl() 
+function _createAgentColl()
 {
+   // get refrence handle to the Agent collection
+   var cref = helper.crefAgent();
+
+   // create and add the first agent record to the Agent collection.
+   // generate a unique Agent Id key for this real-estate agent record
+   helper.genAgentId(
+   function(err, pkId)
+   {
+     if(!err)
+     { // pkId generated 
+       var jsonRecord = 
+         {agentId:pkId,agentId:1001,
+          agentData:{agentFN:'Dinesh',agentLN:'Chugtai',agentLicense:'CAL-34917'}
+          officeId:1001,
+          properties:[{propertyId:'1001',clientId:'1001',propertyState:0}]
+         };
+
+       cref.insertOne( jsonRecord, {w:1, j:true},
+       function(err,result)
+       { 
+         if(!err)
+         {
+           console.log("Agent record "+pkId+" added to Agent collection.");
+         }
+       });
+     }
+   });
 
   return;
 }
-
 
 function _createNotificationColl() 
 {
