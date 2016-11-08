@@ -266,13 +266,20 @@ function _createPropertyColl()
   {
     if(!err)
     { // pkId generated 
-      var propertyRecord = JSON.stringify(
+      var jsonRecord = 
         {_id:pkId,propertyId:pkId,
          location:{address:'1024',street:'College',city:'Wheaton',state:'California',longitude:'35.601623',latitude:'-78.245908'},
          sqFeet:2895,numBeds:4,description:'Two blocks from university'
-        });
+        };
 
-      crefProperty.insertOne(propertyRecord);
+      crefProperty.insertOne( jsonRecord, {w:1, j:true},
+      function(err,result)
+      { 
+        if(!err)
+        {
+          console.log(" Property record "+pkId+" added to Property collection.");
+        }
+      });
     }
   });
 
