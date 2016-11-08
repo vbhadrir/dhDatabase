@@ -95,12 +95,14 @@ app.get('/dbCreate', function (req, res)
       { // Counter collection is now fully built
         console.log('  ... Counter collection created successfully.' );
 
-        // Create Property Collection
-        _createPropertyColl();
-
         // Create Agent Collection
         _createAgentColl();
 
+        // Create Office Collection
+        _createOfficeColl();
+
+        // Create Property Collection
+        _createPropertyColl();
       }
     });
 
@@ -207,16 +209,16 @@ app.get('/echo', function (req, res)
   return;
 });
 
-// test function
-app.get('/test', function (req, res) 
+// test functions
+app.get('/offices', function (req, res) 
 {
-  console.log("app.get(./test function has been called.");
+  console.log("app.get(./offices function has been called.");
 
-  var crefProperty = helper.crefProperty();
+  var cref = helper.crefOffice();
   var dbQuery = {};               // query used for looking up records in the collection
 
   // fetch records from the notification collection based on the query desired.
-  crefProperty.find(dbQuery).toArray( function(err, items) 
+  cref.find(dbQuery).toArray( function(err, items) 
   {
      if(!err)
      {
@@ -231,6 +233,31 @@ app.get('/test', function (req, res)
      }
   });
 
+  return;
+});
+
+app.get('/properties', function (req, res) 
+{
+  console.log("app.get(./properties function has been called.");
+
+  var cref = helper.crefProperty();
+  var dbQuery = {};               // query used for looking up records in the collection
+
+  // fetch records from the notification collection based on the query desired.
+  cref.find(dbQuery).toArray( function(err, items) 
+  {
+     if(!err)
+     {
+        // send the http response message
+        var retjson = {"RC":_rcOK};      // assume a good json response
+        var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+        //retjson.success = "  ... Items -> " + items;
+        retjson= items;
+
+        // send the http response message
+        helper.httpJsonResponse(res,statusCode,retjson);
+     }
+  });
 
   return;
 });
@@ -254,6 +281,38 @@ function _createAgentColl()
   return;
 }
 
+function _createOfficeColl() 
+{
+  // get refrence handle to the Office collection
+  var crefOffice = helper.crefOffice();
+
+  // create and add the first office record to the Office collection.
+  // generate a unique Office Id key for this real-estate Office record
+  helper.genOfficeId(
+  function(err, pkId)
+  {
+    if(!err)
+    { // pkId generated 
+      var jsonRecord = 
+        {officeId:pkId,officeName:'Valley North',officeManager:'Erlich Bachman',
+         officeAddr:{address:'223',street:'Mountain Drive',city:'Buena Vista',state:'California'},
+         numProperties:0
+        };
+
+      crefOffice.insertOne( jsonRecord, {w:1, j:true},
+      function(err,result)
+      { 
+        if(!err)
+        {
+          console.log("Office record "+pkId+" added to Office collection.");
+        }
+      });
+    }
+  });
+
+  return;
+}
+
 // create the Property collection and add a few property records to the collection.
 function _createPropertyColl() 
 {
@@ -268,9 +327,9 @@ function _createPropertyColl()
     if(!err)
     { // pkId generated 
       var jsonRecord = 
-        {_id:pkId,propertyId:pkId,
+        {propertyId:pkId,
          location:{address:'1024',street:'College',city:'Wheaton',state:'California',longitude:'35.601623',latitude:'-78.245908'},
-         sqFeet:2895,numBeds:4,description:'Two blocks from university'
+         sqFeet:2895,numBeds:4,numBaths:3,description:'Two blocks from university'
         };
 
       crefProperty.insertOne( jsonRecord, {w:1, j:true},
@@ -278,7 +337,7 @@ function _createPropertyColl()
       { 
         if(!err)
         {
-          console.log(" Property record "+pkId+" added to Property collection.");
+          console.log("Property record "+pkId+" added to Property collection.");
         }
       });
     }
@@ -292,9 +351,9 @@ function _createPropertyColl()
     if(!err)
     { // pkId generated 
       var jsonRecord = 
-        {_id:pkId,propertyId:pkId,
+        {propertyId:pkId,
          location:{address:'435',street:'Main',city:'Springfield',state:'California',longitude:'36.507623',latitude:'-79.145509'},
-         sqFeet:3200,numBeds:5,description:'Nice cottage by lake'
+         sqFeet:3200,numBeds:5,numBaths:3,description:'Nice cottage by lake'
         };
 
       crefProperty.insertOne( jsonRecord, {w:1, j:true},
@@ -302,7 +361,7 @@ function _createPropertyColl()
       { 
         if(!err)
         {
-          console.log(" Property record "+pkId+" added to Property collection.");
+          console.log("Property record "+pkId+" added to Property collection.");
         }
       });
     }
@@ -316,7 +375,7 @@ function _createPropertyColl()
     if(!err)
     { // pkId generated 
       var jsonRecord = 
-        {_id:pkId,propertyId:pkId,
+        {propertyId:pkId,
          location:{address:'2240',street:'Berlin',city:'Florence',state:'California',longitude:'31.086579',latitude:'-72.357987'},
          sqFeet:3950,numBeds:5,numBaths:5,description:'Mansion in the city'
         };
@@ -326,7 +385,7 @@ function _createPropertyColl()
       { 
         if(!err)
         {
-          console.log(" Property record "+pkId+" added to Property collection.");
+          console.log("Property record "+pkId+" added to Property collection.");
         }
       });
     }
