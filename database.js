@@ -308,9 +308,32 @@ function _createPropertyColl()
     }
   });
 
+  // create and another property record to the Property collection.
+  // generate a unique Property Id key for this real-estate property record
+  helper.genPropertyId(
+  function(err, pkId)
+  {
+    if(!err)
+    { // pkId generated 
+      var jsonRecord = 
+        {_id:pkId,propertyId:pkId,
+         location:{address:'2240',street:'Berlin',city:'Florence',state:'California',longitude:'31.086579',latitude:'-72.357987'},
+         sqFeet:3950,numBeds:5,numBaths:5,description:'Mansion in the city'
+        };
+
+      crefProperty.insertOne( jsonRecord, {w:1, j:true},
+      function(err,result)
+      { 
+        if(!err)
+        {
+          console.log(" Property record "+pkId+" added to Property collection.");
+        }
+      });
+    }
+  });
+
   return;
 }
-
 
 // deletes the database completely, does a drop DB
 function _deleteDB() 
