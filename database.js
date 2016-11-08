@@ -366,8 +366,8 @@ function _createClientColl()
      { // pkId generated 
        var jsonRecord = 
          {clientId:pkId,
-          clientName:{clientFN:'',clientLN:''},
-          clientAddr:{address:'',street:'',city:'',state:''},
+          clientName:{clientFN:'Richard',clientLN:'Hendrix'},
+          clientAddr:{address:'101',street:'Valley Steet',city:'Glendale',state:'California'},
           agentId:1001,
           suggestedProperties:[{propertyId:1001,propertyState:0,rating:0,comments:[{comment:'This is a beautiful home'}]}]
          };
