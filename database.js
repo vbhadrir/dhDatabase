@@ -222,7 +222,7 @@ app.get('/test', function (req, res)
   crefProperty.find(dbQuery).toArray( function(err, items) 
   {
      // send the http response message
-     retjson.success = "  ... Items(" + items.parse();
+     retjson.success = "  ... Items(" + JSON.parse(items);
      res.status(statusCode).json(retjson);
      res.end;
 
