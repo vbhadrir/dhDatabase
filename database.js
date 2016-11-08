@@ -258,7 +258,7 @@ app.get('/notifications', function (req, res)
 {
   console.log("app.get(./notifications function has been called.");
 
-  var cref = helper.crefNotifications();
+  var cref = helper.crefNotification();
   var dbQuery = {};               // query used for looking up records in the collection
 
   // fetch records from the notification collection based on the query desired.
