@@ -84,13 +84,19 @@ app.get('/dbCreate', function (req, res)
   // test if connected to the DB
   if(_dbConnected==true)
   { // connected to the DB
+    // we will create the collections, but WITHOUT any callbacks
+    // we will assume everything builds correctly and check on the status later.
+
     // Create Counter Collection
     _createCounterColl();
+
+    // Create Property Collection
+    _createPropertyColl();
 
     // Create Agent Collection
     _createAgentColl();
 
-    retjson.success  = "DB created successfully!";
+    retjson.success  = "DB create processed successfull but NOT verified!";
 
     // send the http response message
     helper.httpJsonResponse(res,statusCode,retjson);
@@ -193,6 +199,34 @@ app.get('/echo', function (req, res)
   return;
 });
 
+// test function
+app.get('/test', function (req, res) 
+{
+  console.log("app.get(./test function has been called.");
+
+  var retjson = {"RC":_rcOK};      // assume a good json response
+  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+
+
+  var crefProperty = helper.crefProperty();
+  var dbQuery = {};               // query used for looking up records in the collection
+
+  // fetch records from the notification collection based on the query desired.
+  crefProperty.find(dbQuery).toArray( function(err, items) 
+  {
+     // send the http response message
+     retjson.success = "  ... Items(" + items.parse();
+     res.status(statusCode).json(retjson);
+     res.end;
+
+     // send the http response message
+     helper.httpJsonResponse(res,statusCode,retjson);
+  });
+
+
+  return;
+});
+
 
 //-----------------------------------------------------------------------------
 // Private function start here
@@ -211,6 +245,47 @@ function _createAgentColl()
 
   return;
 }
+
+// create the Property collection and add a few property records to the collection.
+function _createPropertyColl() 
+{
+  // get refrence handle to the Property collection
+  var crefProperty = helper.crefProperty();
+
+  // create and add the first property record to the Property collection.
+  // generate a unique Property Id key for this real-estate property record
+  helper.genPropertyId(
+  function(err, pkId)
+  {
+    if(!err)
+    { // pkId generated 
+      var propertyRecord = JSON.stringify(
+        {_id:pkId,propertyId:pkId,
+         location:{address:'1024',street:'College',city:'Wheaton',state:'California',longitude:'35.601623',latitude:'-78.245908'},
+         sqFeet:2895,numBeds:4,description:'Two blocks from university'
+        });
+
+      crefProperty.insertOne(propertyRecord);
+    }
+  });
+
+  return;
+}
+
+/*
+DBObject propertyDoc = new BasicDBObject("propertyId", 1001)
+  	.append("location", new BasicDBObject("address", "1024")
+  			.append("street", "College")
+  			.append("city", "Wheaton")
+  			.append("state", "California")
+  			.append("longitude", "35.601623")
+  			.append("latitude", "-78.245908"))
+  	.append("sqFeet", 2895)
+  	.append("numBeds", 4)
+  	.append("numBaths", 3)
+  	.append("description", "Two blocks from university");
+WriteResult wr = coll.insert(propertyDoc, WriteConcern.ACKNOWLEDGED);
+*/
 
 
 // deletes the database completely, does a drop DB
