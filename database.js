@@ -283,23 +283,32 @@ function _createPropertyColl()
     }
   });
 
+  // create and another property record to the Property collection.
+  // generate a unique Property Id key for this real-estate property record
+  helper.genPropertyId(
+  function(err, pkId)
+  {
+    if(!err)
+    { // pkId generated 
+      var jsonRecord = 
+        {_id:pkId,propertyId:pkId,
+         location:{address:'435',street:'Main',city:'Springfield',state:'California',longitude:'36.507623',latitude:'-79.145509'},
+         sqFeet:3200,numBeds:5,description:'Nice cottage by lake'
+        };
+
+      crefProperty.insertOne( jsonRecord, {w:1, j:true},
+      function(err,result)
+      { 
+        if(!err)
+        {
+          console.log(" Property record "+pkId+" added to Property collection.");
+        }
+      });
+    }
+  });
+
   return;
 }
-
-/*
-DBObject propertyDoc = new BasicDBObject("propertyId", 1001)
-  	.append("location", new BasicDBObject("address", "1024")
-  			.append("street", "College")
-  			.append("city", "Wheaton")
-  			.append("state", "California")
-  			.append("longitude", "35.601623")
-  			.append("latitude", "-78.245908"))
-  	.append("sqFeet", 2895)
-  	.append("numBeds", 4)
-  	.append("numBaths", 3)
-  	.append("description", "Two blocks from university");
-WriteResult wr = coll.insert(propertyDoc, WriteConcern.ACKNOWLEDGED);
-*/
 
 
 // deletes the database completely, does a drop DB
