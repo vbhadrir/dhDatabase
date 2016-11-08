@@ -87,21 +87,22 @@ app.get('/dbCreate', function (req, res)
     // we will create the collections, but WITHOUT any callbacks
     // we will assume everything builds correctly and check on the status later.
 
-    // Create Counter Collection
+    // Create Counter Collection and be sure it's built prior to building any other collections.
     _createCounterColl(
     function(err)
     {
       if(!err)
-      {
+      { // Counter collection is now fully built
         console.log('  ... Counter collection created successfully.' );
+
+        // Create Property Collection
+        _createPropertyColl();
+
+        // Create Agent Collection
+        _createAgentColl();
+
       }
     });
-
-    // Create Property Collection
-    _createPropertyColl();
-
-    // Create Agent Collection
-    _createAgentColl();
 
     retjson.success  = "DB create processed successfull but NOT verified!";
 
