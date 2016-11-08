@@ -211,23 +211,23 @@ app.get('/test', function (req, res)
 {
   console.log("app.get(./test function has been called.");
 
-  var retjson = {"RC":_rcOK};      // assume a good json response
-  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-
   var crefProperty = helper.crefProperty();
   var dbQuery = {};               // query used for looking up records in the collection
 
   // fetch records from the notification collection based on the query desired.
   crefProperty.find(dbQuery).toArray( function(err, items) 
   {
-     // send the http response message
-     retjson.success = "  ... Items -> " + items;
-     res.status(statusCode).json(retjson);
-     res.end;
+     if(!err)
+     {
+        // send the http response message
+        var retjson = {"RC":_rcOK};      // assume a good json response
+        var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+        //retjson.success = "  ... Items -> " + items;
+        retjson= items;
 
-     // send the http response message
-     helper.httpJsonResponse(res,statusCode,retjson);
+        // send the http response message
+        helper.httpJsonResponse(res,statusCode,retjson);
+     }
   });
 
 
