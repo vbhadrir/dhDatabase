@@ -209,7 +209,7 @@ app.get('/clients', function (req, res)
         // send the http response message
         var retjson = {"RC":_rcOK};      // assume a good json response
         var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-        //retjson.success = "  ... Items -> " + items;
+
         retjson.items = items;
 
         // send the http response message
@@ -235,8 +235,8 @@ app.get('/agents', function (req, res)
         // send the http response message
         var retjson = {"RC":_rcOK};      // assume a good json response
         var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-        //retjson.success = "  ... Items -> " + items;
-        retjson= items;
+
+        retjson.items = items;
 
         // send the http response message
         helper.httpJsonResponse(res,statusCode,retjson);
@@ -262,8 +262,8 @@ app.get('/offices', function (req, res)
         // send the http response message
         var retjson = {"RC":_rcOK};      // assume a good json response
         var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-        //retjson.success = "  ... Items -> " + items;
-        retjson= items;
+
+        retjson.items = items;
 
         // send the http response message
         helper.httpJsonResponse(res,statusCode,retjson);
@@ -288,8 +288,8 @@ app.get('/properties', function (req, res)
         // send the http response message
         var retjson = {"RC":_rcOK};      // assume a good json response
         var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-        //retjson.success = "  ... Items -> " + items;
-        retjson= items;
+
+        retjson.items = items;
 
         // send the http response message
         helper.httpJsonResponse(res,statusCode,retjson);
@@ -314,8 +314,8 @@ app.get('/notifications', function (req, res)
         // send the http response message
         var retjson = {"RC":_rcOK};      // assume a good json response
         var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-        //retjson.success = "  ... Items -> " + items;
-        retjson= items;
+
+        retjson.items = items;
 
         // send the http response message
         helper.httpJsonResponse(res,statusCode,retjson);
