@@ -55,11 +55,11 @@ helper.dbInit( function(err)
   }
 
 // test code
-var port = app.env.OPENSHIFT_NODEJS_PORT || 0;
-var host = app.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+var port = process.env.OPENSHIFT_NODEJS_PORT || 0;
+var host = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 console.log("  ... DEBUG: ip:port->" + host + ":" + port );
 
-var mongourl = app.env.mongourl || 'none';
+var mongourl = process.env.mongourl || 'none';
 console.log("  ... DEBUG: mongourl->" + mongourl );
 
   // Start the node.js server listening
