@@ -54,6 +54,14 @@ helper.dbInit( function(err)
     console.log('  ... WARNING: application failed to connect with the backend DB!');
   }
 
+// test code
+var port = app.env.OPENSHIFT_NODEJS_PORT || 0;
+var host = app.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+console.log("  ... DEBUG: ip:port->" + host + ":" + port );
+
+var mongourl = app.env.mongourl || 'none';
+console.log("  ... DEBUG: mongourl->" + mongourl );
+
   // Start the node.js server listening
   // even if the backend DB connection fails we still want to service requests
   app.listen(_port);
