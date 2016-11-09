@@ -37,7 +37,7 @@ var _rcUnknown = 99;
 //-----------------------------------------------------------------------------
 // Main code body
 //-----------------------------------------------------------------------------
-console.log("DreamHome.Notification ==> Begin Execution");
+console.log("DreamHome.dhDatabase service ==> Begin Execution");
 
 // wait for DB module to fully initialize and connect to the backend DB
 // we don't want to start the node.js server listening till we know we are fully connected to the DB
@@ -192,24 +192,6 @@ app.get('/dbDelete', function (req, res)
 });
 
 //-----------------------------------------------------------------------------
-// Simple echo get method, used to sanity test service
-//-----------------------------------------------------------------------------
-app.get('/echo', function (req, res) 
-{
-  console.log("app.get(./echo function has been called.");
-
-  var retjson = {"RC":_rcOK};      // assume a good json response
-  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
-
-  // send the http response message
-  retjson.success = "Echo from DreamHome.Notification service!";
-  res.status(statusCode).json(retjson);
-  res.end;
-
-  return;
-});
-
-//-----------------------------------------------------------------------------
 // functions to get/fetch records from the collections
 //-----------------------------------------------------------------------------
 app.get('/clients', function (req, res) 
@@ -219,7 +201,7 @@ app.get('/clients', function (req, res)
   var cref = helper.crefClient();
   var dbQuery = {};               // query used for looking up records in the collection
 
-  // fetch records from the notification collection based on the query desired.
+  // fetch records from the collection based on the query desired.
   cref.find(dbQuery).toArray( function(err, items) 
   {
      if(!err)
@@ -228,7 +210,7 @@ app.get('/clients', function (req, res)
         var retjson = {"RC":_rcOK};      // assume a good json response
         var statusCode = 200;            // assume valid http response code=200 (OK, good response)
         //retjson.success = "  ... Items -> " + items;
-        retjson= items;
+        retjson.items = items;
 
         // send the http response message
         helper.httpJsonResponse(res,statusCode,retjson);
@@ -245,7 +227,7 @@ app.get('/agents', function (req, res)
   var cref = helper.crefAgent();
   var dbQuery = {};               // query used for looking up records in the collection
 
-  // fetch records from the notification collection based on the query desired.
+  // fetch records from the collection based on the query desired.
   cref.find(dbQuery).toArray( function(err, items) 
   {
      if(!err)
@@ -272,7 +254,7 @@ app.get('/offices', function (req, res)
   var cref = helper.crefOffice();
   var dbQuery = {};               // query used for looking up records in the collection
 
-  // fetch records from the notification collection based on the query desired.
+  // fetch records from the collection based on the query desired.
   cref.find(dbQuery).toArray( function(err, items) 
   {
      if(!err)
@@ -298,7 +280,7 @@ app.get('/properties', function (req, res)
   var cref = helper.crefProperty();
   var dbQuery = {};               // query used for looking up records in the collection
 
-  // fetch records from the notification collection based on the query desired.
+  // fetch records from the collection based on the query desired.
   cref.find(dbQuery).toArray( function(err, items) 
   {
      if(!err)
@@ -324,7 +306,7 @@ app.get('/notifications', function (req, res)
   var cref = helper.crefNotification();
   var dbQuery = {};               // query used for looking up records in the collection
 
-  // fetch records from the notification collection based on the query desired.
+  // fetch records from the collection based on the query desired.
   cref.find(dbQuery).toArray( function(err, items) 
   {
      if(!err)
@@ -339,6 +321,24 @@ app.get('/notifications', function (req, res)
         helper.httpJsonResponse(res,statusCode,retjson);
      }
   });
+
+  return;
+});
+
+//-----------------------------------------------------------------------------
+// Simple echo get method, used to sanity test service
+//-----------------------------------------------------------------------------
+app.get('/echo', function (req, res) 
+{
+  console.log("app.get(./echo function has been called.");
+
+  var retjson = {"RC":_rcOK};      // assume a good json response
+  var statusCode = 200;            // assume valid http response code=200 (OK, good response)
+
+  // send the http response message
+  retjson.success = "Echo from DreamHome.dhDatabase service!";
+  res.status(statusCode).json(retjson);
+  res.end;
 
   return;
 });
