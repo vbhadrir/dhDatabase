@@ -62,7 +62,7 @@ console.log("  ... DEBUG: mongourl->" + mongourl );
 
   // Start the node.js server listening
   // even if the backend DB connection fails we still want to service requests
-  app.listen(_port,_host);
+  app.listen(_port);
 
   console.log('  ... application now listening on port ' + _port);
 });
