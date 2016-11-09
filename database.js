@@ -24,7 +24,9 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); // for parsing application/json
 //-----------------------------------------------------------------------------
 
-var _port = 8080;      // port that the node.js server will listen on
+// what host and port should we listen on?
+var _host = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';  // host to listen on
+var _port = process.env.OPENSHIFT_NODEJS_PORT || 8080;       // port to listen on
 
 //-----------------------------------------------------------------------------
 // return code definitions, used in json responses {"RC": _rcOK}  
@@ -55,16 +57,12 @@ helper.dbInit( function(err)
   }
 
 // test code
-var port = process.env.OPENSHIFT_NODEJS_PORT || 0;
-var host = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-console.log("  ... DEBUG: ip:port->" + host + ":" + port );
-
 var mongourl = process.env.mongourl || 'none';
 console.log("  ... DEBUG: mongourl->" + mongourl );
 
   // Start the node.js server listening
   // even if the backend DB connection fails we still want to service requests
-  app.listen(_port);
+  app.listen(_port,_host);
 
   console.log('  ... application now listening on port ' + _port);
 });
