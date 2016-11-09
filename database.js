@@ -25,7 +25,7 @@ app.use(bodyParser.json()); // for parsing application/json
 //-----------------------------------------------------------------------------
 
 // what host and port should we listen on?
-var _host = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';  // host to listen on
+//var _host = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';  // host to listen on
 var _port = process.env.OPENSHIFT_NODEJS_PORT || 8080;       // port to listen on
 
 //-----------------------------------------------------------------------------
@@ -55,10 +55,6 @@ helper.dbInit( function(err)
     // but we mark the server as having a severe DB connection error!
     console.log('  ... WARNING: application failed to connect with the backend DB!');
   }
-
-// test code
-var mongourl = process.env.mongourl || 'none';
-console.log("  ... DEBUG: mongourl->" + mongourl );
 
   // Start the node.js server listening
   // even if the backend DB connection fails we still want to service requests
