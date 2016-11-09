@@ -198,7 +198,7 @@ app.get('/dbDelete', function (req, res)
 //-----------------------------------------------------------------------------
 app.get('/clients', function (req, res) 
 {
-  console.log("app.get(./clients function has been called.");
+//  console.log("app.get(./clients function has been called.");
 
   var cref = helper.crefClient();
   var dbQuery = {};               // query used for looking up records in the collection
@@ -224,7 +224,7 @@ app.get('/clients', function (req, res)
 
 app.get('/agents', function (req, res) 
 {
-  console.log("app.get(./agents function has been called.");
+//  console.log("app.get(./agents function has been called.");
 
   var cref = helper.crefAgent();
   var dbQuery = {};               // query used for looking up records in the collection
@@ -251,7 +251,7 @@ app.get('/agents', function (req, res)
 // functions to get/fetch records from the collections
 app.get('/offices', function (req, res) 
 {
-  console.log("app.get(./offices function has been called.");
+//  console.log("app.get(./offices function has been called.");
 
   var cref = helper.crefOffice();
   var dbQuery = {};               // query used for looking up records in the collection
@@ -277,7 +277,7 @@ app.get('/offices', function (req, res)
 
 app.get('/properties', function (req, res) 
 {
-  console.log("app.get(./properties function has been called.");
+//  console.log("app.get(./properties function has been called.");
 
   var cref = helper.crefProperty();
   var dbQuery = {};               // query used for looking up records in the collection
@@ -303,7 +303,7 @@ app.get('/properties', function (req, res)
 
 app.get('/notifications', function (req, res) 
 {
-  console.log("app.get(./notifications function has been called.");
+//  console.log("app.get(./notifications function has been called.");
 
   var cref = helper.crefNotification();
   var dbQuery = {};               // query used for looking up records in the collection
@@ -332,7 +332,7 @@ app.get('/notifications', function (req, res)
 //-----------------------------------------------------------------------------
 app.get('/echo', function (req, res) 
 {
-  console.log("app.get(./echo function has been called.");
+//  console.log("app.get(./echo function has been called.");
 
   var retjson = {"RC":_rcOK};      // assume a good json response
   var statusCode = 200;            // assume valid http response code=200 (OK, good response)
